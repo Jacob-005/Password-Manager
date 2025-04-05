@@ -5,7 +5,7 @@ import 'package:password_manager/services/firestore_service.dart';
 class AddEditScreen extends StatefulWidget {
   final PasswordEntry? entry; // Null for adding, populated for editing
 
-  AddEditScreen({this.entry});
+  const AddEditScreen({super.key, this.entry});
 
   @override
   _AddEditScreenState createState() => _AddEditScreenState();

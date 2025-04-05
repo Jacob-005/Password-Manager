@@ -8,6 +8,8 @@ class HomeScreen extends StatelessWidget {
   final AuthService _auth = AuthService();
   final FirestoreService _firestore = FirestoreService();
 
+  HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
