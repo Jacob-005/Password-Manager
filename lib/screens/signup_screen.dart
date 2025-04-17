@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:password_manager/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
-
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -34,10 +31,12 @@ class _SignupScreenState extends State<SignupScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                print('Signup button pressed'); // Debug
                 Map<String, dynamic> result = await _auth.signUp(
                   _emailController.text,
                   _passwordController.text,
                 );
+                print('SignUp result: $result'); // Debug
                 if (result['success'] == true) {
                   Navigator.pushReplacementNamed(context, '/login');
                 } else {
