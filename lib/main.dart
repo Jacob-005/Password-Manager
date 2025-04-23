@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:firebase_core/firebase_core.dart';
 import 'package:password_manager/screens/login_screen.dart';
 import 'package:password_manager/screens/signup_screen.dart';
 import 'package:password_manager/screens/home_screen.dart';
 import 'package:password_manager/screens/add_edit_screen.dart';
-import 'package:password_manager/models/password_entry.dart'; // Add this import
+import 'package:password_manager/models/password_entry.dart';
+import 'package:password_manager/utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +20,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme, // Use dark theme
       initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/signup': (context) => SignupScreen(),
+        '/home': (context) => HomeScreen(),
+      },
       onGenerateRoute: (settings) {
         if (settings.name == '/add_edit') {
           final args = settings.arguments as PasswordEntry?;
@@ -28,12 +34,7 @@ class MyApp extends StatelessWidget {
             builder: (context) => AddEditScreen(entry: args),
           );
         }
-        return null; // Let routes handle other cases
-      },
-      routes: {
-        '/login': (context) => LoginScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/home': (context) => HomeScreen(),
+        return null;
       },
     );
   }

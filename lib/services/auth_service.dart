@@ -5,42 +5,28 @@ class AuthService {
 
   Future<Map<String, dynamic>> signIn(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return {
-        'success': true,
-        'user': userCredential.user,
-        'message': 'Login successful',
-      };
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return {'success': true};
     } catch (e) {
-      return {
-        'success': false,
-        'user': null,
-        'message': e.toString(),
-      };
+      String errorMessage = 'Login failed';
+      if (e is FirebaseAuthException) {
+        errorMessage = e.code; // e.g., 'invalid-email', 'wrong-password'
+      }
+      return {'success': false, 'message': errorMessage};
     }
   }
 
   Future<Map<String, dynamic>> signUp(String email, String password) async {
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return {
-        'success': true,
-        'user': userCredential.user,
-        'message': 'Signup successful',
-      };
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return {'success': true};
     } catch (e) {
-      return {
-        'success': false,
-        'user': null,
-        'message': e.toString(),
-      };
+      String errorMessage = 'Signup failed';
+      if (e is FirebaseAuthException) {
+        errorMessage = e.code; // e.g., 'email-already-in-use', 'weak-password'
+      }
+      return {'success': false, 'message': errorMessage};
     }
   }
 
