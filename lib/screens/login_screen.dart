@@ -116,9 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueAccent,
+                                  foregroundColor: Colors.white,
                                   minimumSize: const Size(double.infinity, 50),
                                 ),
-                                child: const Text('Login'),
+                                child: const Text(
+                                  'Login',
+                                  style: TextStyle(fontSize: 18),
+                                ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 12),

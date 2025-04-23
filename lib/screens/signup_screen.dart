@@ -115,9 +115,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueAccent,
+                                  foregroundColor: Colors.white,
                                   minimumSize: const Size(double.infinity, 50),
                                 ),
-                                child: const Text('Sign Up'),
+                                child: const Text(
+                                  'Sign Up',
+                                  style: TextStyle(fontSize: 18),
+                                ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 12),

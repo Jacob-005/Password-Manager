@@ -222,9 +222,14 @@ class _AddEditScreenState extends State<AddEditScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
                           minimumSize: const Size(double.infinity, 50),
                         ),
-                        child: Text(widget.entry == null ? 'Save' : 'Update'),
+                        child: Text(
+                          widget.entry == null ? 'Save' : 'Update',
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
               ],
             ),
