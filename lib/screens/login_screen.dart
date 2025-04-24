@@ -2,37 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:password_manager/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthService _auth = AuthService();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void _showErrorSnackBar(String message) {
-    // Map Firebase error messages to a user-friendly message
-    String userFriendlyMessage =
-        'Incorrect email or password. Please try again.';
-    if (message.contains('invalid-email')) {
-      userFriendlyMessage = 'Incorrect email or password. Please try again.';
-    } else if (message.contains('user-not-found') ||
-        message.contains('wrong-password')) {
-      userFriendlyMessage =
-          'Incorrect email or password. Please double-check and try again.';
-    } else if (message.contains('too-many-requests')) {
-      userFriendlyMessage =
-          'Too many attempts. Please wait a moment and try again.';
-    }
-
+  void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          userFriendlyMessage,
+          message,
           style: Theme.of(context)
               .textTheme
               .bodyLarge
@@ -40,104 +24,105 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         elevation: 6,
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: 'Dismiss',
           textColor: Colors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
         ),
       ),
     );
   }
 
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+    try {
+      await _auth.signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      _showSnackBar(context, 'Login failed: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Welcome Back',
-                      style: Theme.of(context).textTheme.displayMedium,
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome Back',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email, color: Colors.blueAccent),
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock, color: Colors.blueAccent),
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 24),
-                    _isLoading
-                        ? const CircularProgressIndicator()
-                        : Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  print(
-                                      'Login button pressed: ${_emailController.text}');
-                                  setState(() => _isLoading = true);
-                                  final result = await _auth.signIn(
-                                    _emailController.text,
-                                    _passwordController.text,
-                                  );
-                                  setState(() => _isLoading = false);
-                                  if (result['success'] == true) {
-                                    Navigator.pushReplacementNamed(
-                                        context, '/home');
-                                  } else {
-                                    _showErrorSnackBar(
-                                        result['message'] ?? 'Login failed');
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blueAccent,
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size(double.infinity, 50),
-                                ),
-                                child: const Text(
-                                  'Login',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12),
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/signup');
-                                  },
-                                  child: const Text('Need an account? Sign up'),
-                                ),
-                              ),
-                            ],
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 16),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                  ],
-                ),
+                          child: const Text('Login'),
+                        ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/signup'),
+                    child: Text(
+                      'Create an account',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.blueAccent),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

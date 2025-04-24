@@ -43,11 +43,12 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Password Manager'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.health_and_safety),
+            icon: const Icon(Icons.health_and_safety, color: Colors.blueAccent),
             onPressed: () => Navigator.pushNamed(context, '/health'),
+            tooltip: 'Password Health',
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.blueAccent),
             onPressed: () async {
               try {
                 await _auth.signOut();
@@ -56,6 +57,7 @@ class HomeScreen extends StatelessWidget {
                 _showSnackBar(context, 'Error signing out: $e');
               }
             },
+            tooltip: 'Logout',
           ),
         ],
       ),
@@ -70,14 +72,32 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock_outline, size: 48, color: Colors.grey),
-                  const SizedBox(height: 16),
+                  const Icon(
+                    Icons.lock_outline,
+                    size: 48,
+                    color: Color(0xFFB0BEC5),
+                  ),
+                  const SizedBox(height: 12),
                   Text(
                     'No passwords yet',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: const Color(0xFFB0BEC5),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/add_edit'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(200, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Add Password'),
                   ),
                 ],
               ),
@@ -96,7 +116,10 @@ class HomeScreen extends StatelessWidget {
                 decryptedPassword = '[Decryption Failed: $e]';
               }
               return Card(
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: Colors.blueAccent,
@@ -105,13 +128,23 @@ class HomeScreen extends StatelessWidget {
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                  title: Text(entry.title),
-                  subtitle: Text('${entry.username}\n$decryptedPassword'),
+                  title: Text(
+                    entry.title,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  subtitle: Text(
+                    '${entry.username}\n$decryptedPassword',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        icon: const Icon(Icons.edit, color: Colors.blueAccent),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -120,9 +153,10 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
+                        tooltip: 'Edit',
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.redAccent),
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
@@ -134,11 +168,17 @@ class HomeScreen extends StatelessWidget {
                                 TextButton(
                                   onPressed: () =>
                                       Navigator.pop(context, false),
-                                  child: const Text('Cancel'),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.blueAccent),
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('Delete'),
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
                                 ),
                               ],
                             ),
@@ -153,6 +193,7 @@ class HomeScreen extends StatelessWidget {
                             }
                           }
                         },
+                        tooltip: 'Delete',
                       ),
                     ],
                   ),
@@ -163,10 +204,9 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/add_edit');
-        },
+        onPressed: () => Navigator.pushNamed(context, '/add_edit'),
         backgroundColor: Colors.blueAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: const Icon(Icons.add),
       ),
     );
