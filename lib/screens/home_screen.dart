@@ -12,28 +12,33 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: Colors.white),
+    // Check if ScaffoldMessenger is available and widget is mounted
+    final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+    if (scaffoldMessenger != null && context.mounted) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          elevation: 6,
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            label: 'Dismiss',
+            textColor: Colors.white,
+            onPressed: () => scaffoldMessenger.hideCurrentSnackBar(),
+          ),
         ),
-        backgroundColor: Colors.redAccent,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        elevation: 6,
-        duration: const Duration(seconds: 3),
-        action: SnackBarAction(
-          label: 'Dismiss',
-          textColor: Colors.white,
-          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-        ),
-      ),
-    );
+      );
+    }
   }
 
   @override
@@ -52,7 +57,9 @@ class HomeScreen extends StatelessWidget {
             onPressed: () async {
               try {
                 await _auth.signOut();
-                Navigator.pushReplacementNamed(context, '/login');
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               } catch (e) {
                 _showSnackBar(context, 'Error signing out: $e');
               }
